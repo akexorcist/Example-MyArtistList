@@ -1,7 +1,9 @@
 package com.akexorcist.customlayoutmanager;
 
+import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,8 +20,10 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public static final int POSITION_PERSON_HEADER = 2;
     public static final int POSITION_PERSON_BODY = 3;
 
-    ArrayList<String> nameList;
-    ArrayList<String> categoryList;
+    private ArrayList<String> nameList;
+    private ArrayList<String> categoryList;
+
+    private int headerScollPosition = 0;
 
     public ArtistAdapter(ArrayList<String> categoryList, ArrayList<String> nameList) {
         this.nameList = nameList;
@@ -57,18 +61,15 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
         if (position == POSITION_CATEGORY_HEADER) {
-            ((HeaderViewHolder) holder).tvHeader.setText("Category List");
+            createCategoryHeader(viewHolder);
         } else if (position == POSITION_PERSON_HEADER) {
-            ((HeaderViewHolder) holder).tvHeader.setText("Personal List");
+            createPersonHeader(viewHolder);
         } else if (position == POSITION_CATEGORY_BODY) {
-            CategoryAdapter adapter = new CategoryAdapter(categoryList);
-            RecyclerView rvCategory = ((CategoryBodyViewHolder) holder).rvCategory;
-            rvCategory.setAdapter(adapter);
-            rvCategory.setLayoutManager(new LinearLayoutManager(rvCategory.getContext(), LinearLayoutManager.HORIZONTAL, false));
+            createCategoryItem(viewHolder);
         } else {
-            ((PersonViewHolder) holder).tvPerson.setText(nameList.get(getPersonPosition(position)));
+            createPersonItem(viewHolder, getPersonPosition(position));
         }
     }
 
@@ -80,4 +81,33 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private int getPersonPosition(int rawPosition) {
         return rawPosition - 3;
     }
+
+    public void createCategoryHeader(RecyclerView.ViewHolder viewHolder) {
+        ((HeaderViewHolder) viewHolder).tvHeader.setText("Category List");
+    }
+
+    public void createPersonHeader(RecyclerView.ViewHolder viewHolder) {
+        ((HeaderViewHolder) viewHolder).tvHeader.setText("Personal List");
+    }
+
+    public void createCategoryItem(RecyclerView.ViewHolder viewHolder) {
+        CategoryAdapter adapter = new CategoryAdapter(categoryList);
+        RecyclerView rvCategory = ((CategoryBodyViewHolder) viewHolder).rvCategory;
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(rvCategory.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        rvCategory.setLayoutManager(layoutManager);
+        rvCategory.setAdapter(adapter);
+        rvCategory.addOnScrollListener(onCategoryHeaderScrollListener);
+    }
+
+    public void createPersonItem(RecyclerView.ViewHolder viewHolder, int position) {
+        ((PersonViewHolder) viewHolder).tvPerson.setText(nameList.get(position));
+    }
+
+    private RecyclerView.OnScrollListener onCategoryHeaderScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            headerScollPosition += dx;
+        }
+    };
 }
