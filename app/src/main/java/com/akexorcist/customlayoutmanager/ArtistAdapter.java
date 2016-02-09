@@ -3,6 +3,7 @@ package com.akexorcist.customlayoutmanager;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private ArrayList<String> nameList;
     private ArrayList<String> categoryList;
 
-    private int headerScrollPosition = 0;
+    private int headerScollPosition = 0;
 
     public ArtistAdapter(ArrayList<String> categoryList, ArrayList<String> nameList) {
         this.nameList = nameList;
@@ -91,28 +92,11 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
     public void createCategoryItem(RecyclerView.ViewHolder viewHolder) {
         CategoryAdapter adapter = new CategoryAdapter(categoryList);
-        final RecyclerView rvCategory = ((CategoryBodyViewHolder) viewHolder).rvCategory;
-        rvCategory.setLayoutManager(new LinearLayoutManager(rvCategory.getContext(), LinearLayoutManager.HORIZONTAL, false));
+        RecyclerView rvCategory = ((CategoryBodyViewHolder) viewHolder).rvCategory;
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(rvCategory.getContext(), LinearLayoutManager.HORIZONTAL, false);
+        rvCategory.setLayoutManager(layoutManager);
         rvCategory.setAdapter(adapter);
-        rvCategory.setLayoutFrozen(false);
         rvCategory.addOnScrollListener(onCategoryHeaderScrollListener);
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                int lastHeaderScrollPosition = headerScrollPosition;
-                headerScrollPosition = 0;
-                rvCategory.scrollBy(lastHeaderScrollPosition, 0);
-                rvCategory.invalidate();
-            }
-        }, 1);
-    }
-
-    @Override
-    public void onViewDetachedFromWindow(RecyclerView.ViewHolder viewHolder) {
-        if(viewHolder instanceof CategoryBodyViewHolder) {
-            ((CategoryBodyViewHolder) viewHolder).rvCategory.clearOnScrollListeners();
-        }
-        super.onViewDetachedFromWindow(viewHolder);
     }
 
     public void createPersonItem(RecyclerView.ViewHolder viewHolder, int position) {
@@ -123,7 +107,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            headerScrollPosition += dx;
+            headerScollPosition += dx;
         }
     };
 }
