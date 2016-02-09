@@ -17,7 +17,7 @@ public class ArtistAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public static final int POSITION_CATEGORY_HEADER = 0;
     public static final int POSITION_CATEGORY_BODY = 1;
     public static final int POSITION_PERSON_HEADER = 2;
-    public static final int POSITION_PERSON_BODY = 3;
+    public static final int POSITION_PERSON_BODY = 3;asdklasjdlkj
 
     private ArrayList<String> nameList;
     private ArrayList<String> categoryList;
